@@ -174,3 +174,6 @@ mtext("Osservazioni", side = 1, line = 4.5)
 
 # Aggiungi etichette dei cluster sopra le barre
 text(plotKMeans, kmeansData$UrlLength + 2, label = kmeansData$Cluster, cex = 0.8)
+
+
+
