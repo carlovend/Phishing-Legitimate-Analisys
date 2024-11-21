@@ -96,8 +96,135 @@ cat("Rapporto trB / trH (eterogeneità spiegata):", round(rapporto * 100, 2), "%
 cat("\n")
 
 
-## KMEANS
+##DISTANZA DI CEBYCEV
 
+# Calcolo della matrice di distanza
+distanceMatrix <- dist(sampled_data$UrlLength, method = "maximum")
+
+# Clustering gerarchico
+tree <- hclust(distanceMatrix, method = "complete")
+
+# Visualizzazione del dendrogramma
+plot(tree, 
+     main = "Dendrogramma Clustering Gerarchico (Campione) ", 
+     xlab = "Osservazioni (Campione)", 
+     ylab = "Distanza di cebycev", 
+     sub = "Metodo: Complete Linkage, Distanza di Cebycev")
+
+# Screeplot
+plot(tree$height, seq(length(tree$height), 1, by = -1), 
+     type = "b", 
+     main = "Screeplot (distanza di Cebycev)", 
+     xlab = "Distanza di aggregazione", 
+     ylab = "Numero di cluster", 
+     col = "red", 
+     xaxt = "n")
+
+# Aggiungi etichette personalizzate all'asse X
+axis(1, at = seq(0, max(tree$height), by = max(tree$height) / 5), 
+     labels = round(seq(0, max(tree$height), by = max(tree$height) / 5), 2))
+
+# Numero di cluster consigliati dallo screeplot
+k <- 3  # Puoi cambiare questo numero in base al tuo screeplot
+
+# Disegna rettangoli sul dendrogramma per evidenziare i cluster
+plot(tree, 
+     main = "Dendrogramma con Cluster Evidenziati", 
+     xlab = "Osservazioni", 
+     ylab = "Distanza", 
+     sub = "Metodo: Complete Linkage, Distanza di Cebycev")
+rect.hclust(tree, k = k, border = "red")  # Disegna rettangoli
+
+
+#Calcolo delle misure di non omogeneità statistiche
+#Calcolo trH
+X1 <- data.frame(sampled_data$UrlLength)  # Considera la variabile campionata
+rownames(X1) <- paste0("Obs_", 1:nrow(X1))  # Assegna nomi alle righe per chiarezza
+# Calcolo della misura trH
+trH <- (nrow(X1) - 1) * sum(apply(X1, 2, var))
+# Stampa del risultato
+cat("Misura di non omogeneità statistica (trH):", trH, "\n")
+
+#Calcolo i trH per i singoli cluster
+# Taglio del dendrogramma in 3 cluster
+k <- 3  # Numero di cluster
+taglio <- cutree(tree, k = k)  # Assegna ogni osservazione a un cluster
+numTaglio <- table(taglio)  # Numero di osservazioni per cluster
+
+# Calcolo della varianza intra-cluster
+taglioList <- list(taglio)
+agvar <- aggregate(sampled_data$UrlLength, taglioList, var)[, -1]  # Varianza per cluster
+
+# Calcolo dei trH per ciascun cluster
+trH1 <- (numTaglio[[1]] - 1) * sum(agvar[1])
+trH2 <- (numTaglio[[2]] - 1) * sum(agvar[2])
+trH3 <- (numTaglio[[3]] - 1) * sum(agvar[3])
+
+# Somma dei trH intra-cluster
+sumTrH <- trH1 + trH2 + trH3
+
+# Calcolo del trH totale
+X1 <- data.frame(sampled_data$UrlLength)
+rownames(X1) <- paste0("Obs_", 1:nrow(X1))
+trH <- (nrow(X1) - 1) * sum(apply(X1, 2, var))
+
+# Calcolo del trB (eterogeneità tra cluster)
+trB <- trH - sumTrH
+
+# Rapporto trB / trH (percentuale di eterogeneità spiegata dai cluster)
+rapporto <- trB / trH
+
+# Stampa dei risultati
+cat("\n")
+cat("Misura trH totale:", trH, "\n")
+cat("Somma trH intra-cluster:", sumTrH, "\n")
+cat("Misura trB:", trB, "\n")
+cat("Rapporto trB / trH (eterogeneità spiegata):", round(rapporto * 100, 2), "%\n")
+cat("\n")
+
+## Distanza di Canberra
+
+# Calcolo della matrice di distanza
+distanceMatrix <- dist(sampled_data$UrlLength, method = "canberra")
+
+# Clustering gerarchico
+tree <- hclust(distanceMatrix, method = "complete")
+
+# Visualizzazione del dendrogramma
+plot(tree, 
+     main = "Dendrogramma Clustering Gerarchico (Campione) ", 
+     xlab = "Osservazioni (Campione)", 
+     ylab = "Distanza di cebycev", 
+     sub = "Metodo: Complete Linkage, Distanza Canberra")
+
+# Screeplot
+plot(tree$height, seq(length(tree$height), 1, by = -1), 
+     type = "b", 
+     main = "Screeplot (distanza di Canberra)", 
+     xlab = "Distanza di aggregazione", 
+     ylab = "Numero di cluster", 
+     col = "red", 
+     xaxt = "n")
+
+# Aggiungi etichette personalizzate all'asse X
+axis(1, at = seq(0, max(tree$height), by = max(tree$height) / 5), 
+     labels = round(seq(0, max(tree$height), by = max(tree$height) / 5), 2))
+
+# Numero di cluster consigliati dallo screeplot
+k <- 3  # Puoi cambiare questo numero in base al tuo screeplot
+
+# Disegna rettangoli sul dendrogramma per evidenziare i cluster
+plot(tree, 
+     main = "Dendrogramma con Cluster Evidenziati", 
+     xlab = "Osservazioni", 
+     ylab = "Distanza", 
+     sub = "Metodo: Complete Linkage, Distanza di Canberra")
+rect.hclust(tree, k = k, border = "red")  # Disegna rettangoli
+
+
+
+
+## KMEANS
 
 # Calcolo dell'inertia per diversi valori di k
 set.seed(123)  # Per la riproducibilità
