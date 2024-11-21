@@ -5,11 +5,6 @@ library(kableExtra)
 dataset <- read.csv("./Phishing_Legitimate_full.csv")
 
 #Clustering gerarchico
-# Calcolo della matrice di distanza (Euclidea per valori numerici)
-distanceMatrix <- dist(dataset$UrlLength, method = "euclidean")
-
-# Clustering gerarchico
-tree <- hclust(distanceMatrix, method = "complete")
 
 # Visualizzazione del dendrogramma
 # Campiona 30 osservazioni dal dataset per avere meno caos sull'asse delle X
