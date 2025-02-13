@@ -40,7 +40,7 @@ for (feature in continuous_features) {
 }
 dev.off()
 
-cat("✅ Boxplot delle feature continue salvati in 'Boxplot_Feature_Continue.pdf'.\n")
+cat("Boxplot delle feature continue salvati in 'Boxplot_Feature_Continue.pdf'.\n")
 
 
 important_features <- c("PctNullSelfRedirectHyperlinks", 
@@ -59,7 +59,7 @@ for (feature in important_features) {
 }
 dev.off()
 
-cat("✅ Boxplot delle feature importanti salvati in 'Boxplot_Feature_Importanti.pdf'.\n")
+cat("Boxplot delle feature importanti salvati in 'Boxplot_Feature_Importanti.pdf'.\n")
 
 
 melted_data <- melt(data_selected, id.vars = "CLASS_LABEL", 
@@ -76,4 +76,4 @@ ggplot(melted_data, aes(x = variable, y = value, fill = CLASS_LABEL)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 dev.off()
 
-cat("✅ Boxplot multipli salvati in 'Boxplot_Multipli.pdf'.\n")
+cat("Boxplot multipli salvati in 'Boxplot_Multipli.pdf'.\n")
