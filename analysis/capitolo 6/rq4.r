@@ -21,6 +21,7 @@ features_selected <- c("PctExtNullSelfRedirectHyperlinksRT",
                        "PctNullSelfRedirectHyperlinks")
 
 # Funzione per generare i Kernel Density Plot
+# Funzione per generare i Kernel Density Plot
 plot_kernel_density <- function(real_data, synthetic_data, variable_name) {
   
   #  1️ Rimuovere NA
