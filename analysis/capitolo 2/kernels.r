@@ -5,8 +5,6 @@ library(kableExtra)
 
 dataset <- read.csv("./Phishing_Legitimate_full.csv")
 
-# Kernel Density Plot per la lunghezza degli URL
-# Kernel Density Plot
 ggplot(dataset, aes(x = UrlLength)) + 
   geom_density(fill = "skyblue", alpha = 0.5) + 
   labs(title = "Kernel Density Plot della Lunghezza degli URL",

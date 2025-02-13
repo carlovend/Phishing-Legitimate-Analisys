@@ -1,4 +1,4 @@
-#  Installare e caricare i pacchetti necessari
+# Installare e caricare i pacchetti necessari
 list.of.packages <- c("ggplot2", "dplyr", "reshape2")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com/")
@@ -7,7 +7,7 @@ library(ggplot2)
 library(dplyr)
 library(reshape2)
 
-# Caricare il dataset
+#  Caricare il dataset
 file_path <- "Phishing_Legitimate_full.csv"
 dataset <- read.csv(file_path)
 
@@ -18,10 +18,10 @@ features_selected <- c("PctNullSelfRedirectHyperlinks", "PctExtHyperlinks",
 
 data_selected <- dataset[, features_selected]
 
-# Gestire i valori mancanti
+#  Gestire i valori mancanti
 data_selected <- na.omit(data_selected)
 
-# Convertire la variabile target in fattore
+#  Convertire la variabile target in fattore
 data_selected$CLASS_LABEL <- factor(data_selected$CLASS_LABEL, 
                                     levels = c(0, 1), 
                                     labels = c("Legittimo", "Phishing"))
@@ -78,4 +78,4 @@ ggplot(melted_data, aes(x = variable, y = value, fill = CLASS_LABEL)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 dev.off()
 
-cat("✅Boxplot multipli salvati in 'Boxplot_Multipli.pdf'.\n")
+cat(" Boxplot multipli salvati in 'Boxplot_Multipli.pdf'.\n")
