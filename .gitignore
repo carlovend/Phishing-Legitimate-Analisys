@@ -8,6 +8,10 @@ __pycache__/
 *$py.class
 
 # C extensions
+*.pdf
+*.RData
+*.Rhistory
+*.png
 *.so
 
 # Distribution / packaging
