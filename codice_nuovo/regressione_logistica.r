@@ -1,4 +1,4 @@
-# 📌 Installare e caricare i pacchetti necessari
+# Installare e caricare i pacchetti necessari
 list.of.packages <- c("ggplot2", "caret", "dplyr", "MASS", "pROC", "iml")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com/")
@@ -10,11 +10,11 @@ library(MASS)
 library(pROC)
 library(iml)
 
-# 📌 Caricare il dataset
+#  Caricare il dataset
 file_path <- "Phishing_Legitimate_full.csv"
 dataset <- read.csv(file_path)
 
-# 📌 Selezionare le feature e la variabile target
+#  Selezionare le feature e la variabile target
 features_selected <- c("PctExtNullSelfRedirectHyperlinksRT", 
                         "FrequentDomainNameMismatch", 
                         "NumDash", 
@@ -27,33 +27,33 @@ features_selected <- c("PctExtNullSelfRedirectHyperlinksRT",
 
 data_selected <- dataset[, features_selected]
 
-# 📌 1️⃣ Gestire i valori mancanti
+#  1️ Gestire i valori mancanti
 data_selected <- na.omit(data_selected)
 
-# 📌 2️⃣ Rimuovere feature ridondanti (bassa varianza)
+#  2️ Rimuovere feature ridondanti (bassa varianza)
 low_variance <- nearZeroVar(data_selected, saveMetrics = TRUE)
 low_variance_features <- rownames(low_variance[low_variance$nzv == TRUE, ])
 data_selected <- data_selected[, !(names(data_selected) %in% low_variance_features)]
 
-# 📌 3️⃣ Trasformazione delle variabili:
-# 🔹 Verificare che le feature esistano prima della standardizzazione
+#  Trasformazione delle variabili:
+#  Verificare che le feature esistano prima della standardizzazione
 continuous_features <- c("NumDots", "SubdomainLevel", "PathLevel", "UrlLength", 
                          "NumUnderscore", "NumPercent", "NumQueryComponents", "NumAmpersand", 
                          "NumNumericChars", "HostnameLength", "PathLength", "QueryLength", 
                          "PctExtHyperlinks", "PctExtResourceUrls", "PctNullSelfRedirectHyperlinks")
 
-# 📌 Selezionare solo le variabili effettivamente presenti
+#  Selezionare solo le variabili effettivamente presenti
 continuous_features <- intersect(continuous_features, colnames(data_selected))
 
-# 🔹 Standardizzare solo le feature presenti
+#  Standardizzare solo le feature presenti
 data_selected[continuous_features] <- scale(data_selected[continuous_features])
 
-# 🔹 Log-trasformare variabili altamente skewed (solo se esistono)
+#  Log-trasformare variabili altamente skewed (solo se esistono)
 skewed_features <- c("NumDash", "UrlLength", "HostnameLength")  
 skewed_features <- intersect(skewed_features, colnames(data_selected))
 data_selected[skewed_features] <- log(data_selected[skewed_features] + 1)  # Evita log(0)
 
-# 🔹 Convertire le variabili categoriche in fattori (solo se presenti)
+#  Convertire le variabili categoriche in fattori (solo se presenti)
 categorical_features <- c("NumDashInHostname", "AtSymbol", "TildeSymbol", "NumHash", 
                           "NoHttps", "RandomString", "IpAddress", "DomainInSubdomains", 
                           "DomainInPaths", "HttpsInHostname", "DoubleSlashInPath", 
@@ -69,39 +69,39 @@ categorical_features <- c("NumDashInHostname", "AtSymbol", "TildeSymbol", "NumHa
 categorical_features <- intersect(categorical_features, colnames(data_selected))
 data_selected[categorical_features] <- lapply(data_selected[categorical_features], as.factor)
 
-# 📌 Convertire la variabile target in fattore
+#  Convertire la variabile target in fattore
 data_selected$CLASS_LABEL <- as.factor(data_selected$CLASS_LABEL)
 
-# 📌 Dividere il dataset in training (70%) e test (30%)
+#  Dividere il dataset in training (70%) e test (30%)
 set.seed(123)
 train_index <- createDataPartition(data_selected$CLASS_LABEL, p = 0.7, list = FALSE)
 train_data <- data_selected[train_index, ]
 test_data <- data_selected[-train_index, ]
 
-# 📌 Creare il modello di regressione logistica
+#  Creare il modello di regressione logistica
 model <- glm(CLASS_LABEL ~ ., data = train_data, family = binomial)
 
-# 📌 Feature Selection Automatica con AIC
+#  Feature Selection Automatica con AIC
 model_best <- stepAIC(model, direction = "both", trace = FALSE)
 
-# 📌 Stampare i risultati del modello ottimizzato
+#  Stampare i risultati del modello ottimizzato
 summary(model_best)
 
-# 📌 Fare previsioni sul test set
+# Fare previsioni sul test set
 predictions <- predict(model_best, test_data, type = "response")
 
-# 📌 Convertire le probabilità in classi (0 o 1)
+#  Convertire le probabilità in classi (0 o 1)
 predicted_classes <- ifelse(predictions > 0.5, 1, 0)
 
-# 📌 Creare la matrice di confusione
+#  Creare la matrice di confusione
 conf_matrix <- table(Predicted = predicted_classes, Actual = test_data$CLASS_LABEL)
 print(conf_matrix)
 
-# 📌 Calcolare l'accuratezza del modello
+#  Calcolare l'accuratezza del modello
 accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
 cat("✅ Accuratezza del modello ottimizzato:", accuracy, "\n")
 
-# 📌 6️⃣ Learning Curve: Analizziamo la performance con diverse dimensioni del dataset
+#  6 Learning Curve: Analizziamo la performance con diverse dimensioni del dataset
 train_sizes <- seq(0.1, 1.0, by = 0.1)  # Da 10% a 100% del training set
 train_acc <- c()
 test_acc <- c()
@@ -126,7 +126,7 @@ for (size in train_sizes) {
   test_acc <- c(test_acc, sum(diag(test_conf_matrix)) / sum(test_conf_matrix))
 }
 
-# 📌 Creare il plot della Learning Curve
+#  Creare il plot della Learning Curve
 pdf("Learning_Curve.pdf", width = 8, height = 6)
 plot(train_sizes, train_acc, type = "o", col = "blue", lwd = 2, ylim = c(0.5, 1),
      xlab = "Proporzione del Training Set", ylab = "Accuratezza", 
@@ -136,12 +136,12 @@ legend("bottomright", legend = c("Training Accuracy", "Test Accuracy"),
        col = c("blue", "red"), lwd = 2)
 dev.off()
 
-cat("✅ Learning Curve generata: controlla il file 'Learning_Curve.pdf'.\n")
+cat(" Learning Curve generata: controlla il file 'Learning_Curve.pdf'.\n")
 
 
 
 
-# 📌 Applicare SHAP per l'interpretabilità
+# Applicare SHAP per l'interpretabilità
 # Verificare e rimuovere eventuali NA nei dati di test
 shap_input <- test_data[1:5, -which(names(test_data) == "CLASS_LABEL")]
 if (any(is.na(shap_input))) {
